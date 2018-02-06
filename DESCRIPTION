@@ -1,0 +1,15 @@
+Package: rbounds
+Type: Package
+Title: rbounds: Bounds Estimators for Partially Identified Parameters
+Version: 0.1.0
+Author: person("Gabriel", "Geisler Mesevage", email = "gabriel.mesevage@gmail.com",
+  role = c("aut", "cre"))
+Maintainer: The package maintainer <gabriel.mesevage@gmail.com>
+Description: This package implements estimators for partially identified 
+    parameters as described in Manski The Partial Identification 
+    of Probability Distributions
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports:
+    np
