@@ -19,8 +19,6 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
                         data, # The data frame
                         ...) {
 
-  # Missing data vector
-  Z <- data[, z]
 
   # now ensure selection indicator is a factor
   data[, z] <- as.factor(data[, z])
@@ -31,7 +29,7 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   assignInNamespace("explodeFormula", explodeFormula, ns = "np")
 
   # estimate conditional density of outcome for known cases
-  sm.data <- data[z==1,]
+  sm.data <- data[df$z==1,]
   sub.bw <- np::npcdensbw(outformula,
                           data=sm.data)
   y.model <- np::npcdens(sub.bw, newdata = data)
