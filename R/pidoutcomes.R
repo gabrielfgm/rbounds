@@ -22,6 +22,9 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   # Missing data vector
   Z <- data[, z]
 
+  # now ensure selection indicator is a factor
+  data[, z] <- as.factor(data[, z])
+
   # now fix namespace so it reads formulas
   tmpfun <- get("explodeFormula", envir = asNamespace("np"))
   environment(explodeFormula) <- environment(tmpfun)
@@ -36,7 +39,7 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
 
   # Estimate the conditional probability of observation
   z.model <- np::npcdens(dep_var_switcher(outformula, z), data=data, newdata=data)
-  z.probs_at_x <- predict(z.model)
+  z.probs_at_x <- z.model$condens
 
   # Compute worst case bounds
   m_l <- y.probs_at_x * z.probs_at_x
