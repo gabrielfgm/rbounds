@@ -5,11 +5,19 @@ Version: 0.1.0
 Author: person("Gabriel", "Geisler Mesevage", email = "gabriel.mesevage@gmail.com",
   role = c("aut", "cre"))
 Maintainer: The package maintainer <gabriel.mesevage@gmail.com>
-Description: This package implements estimators for partially identified 
+Description: An implimentation of estimators for partially identified 
     parameters as described in Manski The Partial Identification 
-    of Probability Distributions
-License: What license is it under?
-Encoding: UTF-8
+    of Probability Distributions. This package provides a syntax
+    for identifying the bounds on parameters whose value cannot
+    be determined but merely constrained. It computes lower and upper 
+    bounds on parameters using either non-parameteric regression, 
+    series estimators, or linear models, and confidence intervals
+    for the location of the parameter given the upper and lower 
+    bounds. It can be used to estimate conditional means with 
+    missing data, or treatment effects with selection into 
+    treatment.
+License: MIT
 LazyData: true
 Imports:
     np
+Suggests: testthat
