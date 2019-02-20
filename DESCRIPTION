@@ -19,6 +19,8 @@ Description: An implimentation of estimators for partially identified
 License: MIT
 LazyData: true
 Imports:
+    ggplot2
+Depends:
     np
 Suggests: testthat
 RoxygenNote: 6.1.1

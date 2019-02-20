@@ -3,16 +3,6 @@ dep_var_switcher <- function(form, swap) {
   reformulate(deparse(form[[3]]), response = swap)
 }
 
-# We need to fix a bug in a helper function within np, so this will replace
-#  the np function explodeFormula
-explodeFormula <- function(formula) {
-  res <- strsplit(strsplit(paste(deparse(eval(formula)), collapse=""), " *[~] *")[[1]], " *[+] *")
-  stopifnot(all(sapply(res,length) > 0))
-  names(res) <- c("response","terms")
-  res
-}
-
-
 # This is the model that estimates lower and upper bounds
 # with missing outcomes
 

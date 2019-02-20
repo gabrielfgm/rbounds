@@ -64,6 +64,7 @@ print.rbounds <- function(m) {
   cat(paste(to_print, collapse = "\t"))
 }
 
+
 #' A default plotting method for objects of class 'rbounds'
 #'
 #' @param m An object of class 'rbounds' estimated by \code{pidoutcomes}
@@ -102,4 +103,3 @@ plot.rbounds <- function(m) {
     ggplot2::theme_minimal() +
     ggplot2::ggtitle("Partially Identified Conditional Expectation Estimates")
 }
-
