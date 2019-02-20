@@ -31,14 +31,16 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   assignInNamespace("explodeFormula", explodeFormula, ns = "np")
 
   # estimate conditional density of outcome for known cases
-  sm.data <- data[data[,z]==1,]
-  np_lower <- np::npreg(outformula,
-                          data=sm.data,
+  #sm.data <- data[data[,z]==1,]
+  np_lower_bw <- np::npregbw(outformula,
+                             data=data[data[, z]==1, ])
+  np_lower <- np::npreg(np_lower_bw,
                           newdata = data)
 
   # Estimate the conditional probability of observation
-  np_missing <- np::npreg(dep_var_switcher(outformula, z),
-                         data=data)
+  np_missing_bw <- np::npregbw(dep_var_switcher(outformula, z),
+                               data=data)
+  np_missing <- np::npreg(np_missing_bw)
 
   # Compute worst case bounds
   m_l <- np_lower$mean * np_missing$mean
