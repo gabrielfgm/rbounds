@@ -18,28 +18,27 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
                         z, # name of variable indicating missing/non-missing outcomes
                         data, # The data frame
                         ...) {
+  # work around language odity
+  string_form <- capture.output(print(outformula))
 
-  # Ensure formula is properly formatted
-  outformula <- as.formula(outformula)
+  # Get the indicator variable
+  z_col <- eval(z, envir = data)
+  z_name <- deparse(substitute(z))
 
-  # now ensure selection indicator is a factor
-  # data[, z] <- factor(data[, z], levels = c("1", "0"))
-
-  # now fix namespace so it reads formulas
-  tmpfun <- get("explodeFormula", envir = asNamespace("np"))
-  environment(explodeFormula) <- environment(tmpfun)
-  assignInNamespace("explodeFormula", explodeFormula, ns = "np")
+  # # now fix namespace so it reads formulas
+  # tmpfun <- get("explodeFormula", envir = asNamespace("np"))
+  # environment(explodeFormula) <- environment(tmpfun)
+  # assignInNamespace("explodeFormula", explodeFormula, ns = "np")
 
   # estimate conditional density of outcome for known cases
-  #sm.data <- data[data[,z]==1,]
-  np_lower_bw <- np::npregbw(outformula,
-                             data=data[data[, z]==1, ])
+  sm.data <- data[z_col == 1, ]
+  np_lower_bw <- np::npregbw(as.formula(string_form), data = sm.data)
   np_lower <- np::npreg(np_lower_bw,
                           newdata = data)
 
   # Estimate the conditional probability of observation
-  np_missing_bw <- np::npregbw(dep_var_switcher(outformula, z),
-                               data=data)
+  z_form <- capture.output(print(dep_var_switcher(outformula, z_name)))[[1]]
+  np_missing_bw <- np::npregbw(as.formula(z_form), data)
   np_missing <- np::npreg(np_missing_bw)
 
   # Compute worst case bounds
@@ -48,7 +47,7 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   temp.df <- data.frame(m_l, m_u)
 
   # get confidence intervals
-  sigma <- sqrt(sum(residuals(np_lower)^2)/(sum(data[,z]) - 1))
+  sigma <- sqrt(sum(residuals(np_lower)^2)/(sum(z_col) - 1))
   conf_ints <- do.call(rbind, apply(temp.df, 1, function(row){
     conf_int_bounds(row[2], row[1], sigma, sigma, nrow(data))
   }))
