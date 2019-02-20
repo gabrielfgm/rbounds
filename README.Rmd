@@ -67,6 +67,6 @@ y <- rbinom(N, 1, pnorm(x))
 
 df <- data.frame(y, x, z)
 
-res <- pidoutcomes(y~x, "z", df)
+res <- pidoutcomes(y~x, z, df)
 
 ```
