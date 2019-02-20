@@ -4,7 +4,7 @@
 \alias{pidoutcomes}
 \title{Partial Identification of Conditional Expectations with Missing Outcomes}
 \usage{
-pidoutcomes(outformula, z, data, ...)
+pidoutcomes(outformula, z, data, alpha = 0.95, ...)
 }
 \arguments{
 \item{outformula}{A formula}
@@ -12,6 +12,8 @@ pidoutcomes(outformula, z, data, ...)
 \item{z}{A column from your data that indicates missing outcomes, must be 0 or 1}
 
 \item{data}{Your data}
+
+\item{alpha}{The alpha significance level for the CI. Default is \code{alpha=.95}}
 
 \item{...}{Other arguments accepted by \code{npreg}}
 }
@@ -29,14 +31,18 @@ mean
 conditional expectation function when there are missing outcomes.
 It only works for a dependent variable scaled such that
 \eqn{y \in (0,1)}.
-It is based on the work of Manski (2007), and computes simply
+It is based on the work of Manski (2007). Assume we want to estimate
 \deqn{P(y|x) = P(y|x,z=1)P(z=1|x) + P(y|x,z=0)P(z=0|x),}
-where \code{z} is a binary variable indicating missingness.
+where \code{z} is a binary variable indicating missingness and
+\code{y} is a binary outcome.
 All of the quantities are identifiable from the data apart from
 \eqn{P(y|x,z=0)} which is by definition unobservable. However,
 this missing quantity cannot be less than zero or greater than
 one so the absolute bounds on the conditional probability are
 \deqn{P(y|x,z=1)P(z=1|x) \le P(y|x) \le P(y|x,z=1)P(z=1|x) + P(z=0|x).}
+\code{pidoutcomes()} computes these upper and lower bounds.
+}
+\details{
 We also compute confidence intervals based on Manski and Imbens (2004).
 We focus on intervals that are guaranteed to cover the parameter
 at the specified level, rather than intervals that are guaranteed to

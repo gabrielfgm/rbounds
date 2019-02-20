@@ -14,14 +14,17 @@ dep_var_switcher <- function(form, swap) {
 #' conditional expectation function when there are missing outcomes.
 #' It only works for a dependent variable scaled such that
 #' \eqn{y \in (0,1)}.
-#' It is based on the work of Manski (2007), and computes simply
+#' It is based on the work of Manski (2007). Assume we want to estimate
 #' \deqn{P(y|x) = P(y|x,z=1)P(z=1|x) + P(y|x,z=0)P(z=0|x),}
-#' where \code{z} is a binary variable indicating missingness.
+#' where \code{z} is a binary variable indicating missingness and
+#' \code{y} is a binary outcome.
 #' All of the quantities are identifiable from the data apart from
 #' \eqn{P(y|x,z=0)} which is by definition unobservable. However,
 #' this missing quantity cannot be less than zero or greater than
 #' one so the absolute bounds on the conditional probability are
 #' \deqn{P(y|x,z=1)P(z=1|x) \le P(y|x) \le P(y|x,z=1)P(z=1|x) + P(z=0|x).}
+#' \code{pidoutcomes()} computes these upper and lower bounds.
+#'
 #' We also compute confidence intervals based on Manski and Imbens (2004).
 #' We focus on intervals that are guaranteed to cover the parameter
 #' at the specified level, rather than intervals that are guaranteed to
@@ -30,6 +33,7 @@ dep_var_switcher <- function(form, swap) {
 #' @param outformula A formula
 #' @param z A column from your data that indicates missing outcomes, must be 0 or 1
 #' @param data Your data
+#' @param alpha The alpha significance level for the CI. Default is \code{alpha=.95}
 #' @param ... Other arguments accepted by \code{npreg}
 #'
 #' @return The function returns a list of 4 values: \code{lower_ci},
@@ -56,6 +60,7 @@ dep_var_switcher <- function(form, swap) {
 pidoutcomes <- function(outformula, # Formula for the conditional outcome
                         z, # name of variable indicating missing/non-missing outcomes
                         data, # The data frame
+                        alpha = .95,
                         ...) {
   # work around language odity
   string_form <- capture.output(print(outformula))
@@ -83,7 +88,7 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   # get confidence intervals
   sigma <- sqrt(sum(residuals(np_lower)^2)/(sum(z_col) - 1))
   conf_ints <- do.call(rbind, apply(temp.df, 1, function(row){
-    conf_int_bounds(row[2], row[1], sigma, sigma, nrow(data))
+    conf_int_bounds(row[2], row[1], sigma, sigma, nrow(data), alpha = alpha)
   }))
 
   # Return bounds
