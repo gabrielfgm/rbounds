@@ -61,7 +61,7 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   string_form <- capture.output(print(outformula))
 
   # Get the indicator variable
-  z_col <- eval(z, envir = data)
+  z_col <- eval(quote(z), envir = data)
   z_name <- deparse(substitute(z))
 
   # estimate conditional density of outcome for known cases

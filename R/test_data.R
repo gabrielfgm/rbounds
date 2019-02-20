@@ -10,3 +10,4 @@
 # df <- data.frame(y_obs, x, z)
 #
 # m1 <- pidoutcomes(y_obs ~ x, z, df)
+# plot(m1)
