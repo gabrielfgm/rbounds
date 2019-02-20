@@ -54,10 +54,11 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   }))
 
   # Return bounds
-  list(lower_ci = unlist(conf_ints[,1]),
+  res <- list(lower_ci = unlist(conf_ints[,1]),
        lower = m_l,
        upper = m_u,
-       upper_ci = unlist(conf_ints[,2]),
-       class = "rbounds")
+       upper_ci = unlist(conf_ints[,2]))
+  class(res) <- "rbounds"
+  res
 }
 
