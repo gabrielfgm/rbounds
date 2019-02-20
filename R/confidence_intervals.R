@@ -101,5 +101,7 @@ plot.rbounds <- function(m) {
                         color = "tomato", size = .5) +
     ggplot2::geom_errorbar(color = "steelblue", alpha = .7) +
     ggplot2::theme_minimal() +
-    ggplot2::ggtitle("Partially Identified Conditional Expectation Estimates")
+    ggplot2::ggtitle("Partially Identified Conditional Expectation Estimates") +
+    ggplot2::xlab("Observation #") +
+    ggplot2::ylab("Interval Estimate of E(y|x)")
 }

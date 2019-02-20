@@ -55,7 +55,7 @@ conditional means.
 ## We generate some fake data
 library(rbounds)
 #> Loading required package: np
-#> Nonparametric Kernel Methods for Mixed Datatypes (version 0.60-8)
+#> Nonparametric Kernel Methods for Mixed Datatypes (version 0.60-9)
 #> [vignette("np_faq",package="np") provides answers to frequently asked questions]
 #> [vignette("np",package="np") an overview]
 #> [vignette("entropy_np",package="np") an overview of entropy-based methods]
