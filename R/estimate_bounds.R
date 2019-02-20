@@ -13,7 +13,56 @@ explodeFormula <- function(formula) {
 }
 
 
-# This is the model that estimates lower and upper bounds with missing outcomes
+# This is the model that estimates lower and upper bounds
+# with missing outcomes
+
+
+
+#' Partial Identification of Conditional Expectations with Missing Outcomes
+#'
+#' \code{pidoutcomes} computes the upper and lower bounds on the
+#' conditional expectation function when there are missing outcomes.
+#' It only works for a dependent variable scaled such that
+#' \eqn{y \in (0,1)}.
+#' It is based on the work of Manski (2007), and computes simply
+#' \deqn{P(y|x) = P(y|x,z=1)P(z=1|x) + P(y|x,z=0)P(z=0|x),}
+#' where \code{z} is a binary variable indicating missingness.
+#' All of the quantities are identifiable from the data apart from
+#' \eqn{P(y|x,z=0)} which is by definition unobservable. However,
+#' this missing quantity cannot be less than zero or greater than
+#' one so the absolute bounds on the conditional probability are
+#' \deqn{P(y|x,z=1)P(z=1|x) \le P(y|x) \le P(y|x,z=1)P(z=1|x) + P(z=0|x).}
+#' We also compute confidence intervals based on Manski and Imbens (2004).
+#' We focus on intervals that are guaranteed to cover the parameter
+#' at the specified level, rather than intervals that are guaranteed to
+#' cover the bounds at the specified level.
+#'
+#' @param outformula A formula
+#' @param z A column from your data that indicates missing outcomes, must be 0 or 1
+#' @param data Your data
+#' @param ... Other arguments accepted by \code{npreg}
+#'
+#' @return The function returns a list of 4 values: \code{lower_ci},
+#' \code{lower}, \code{upper} and \code{upper_ci}, each a vector of
+#' length \code{nrow(data)}. These are the lower and upper confidence
+#' intervals on the location
+#' of the parameter (as described in Manski and Imbens (2004)), and the
+#' estimated lower and upper bounds of the partially identified conditional
+#' mean
+#' @export
+#'
+#' @examples
+#' #' N <- 1000
+#' x <- rnorm(N)
+#' e <- rnorm(N)
+#' y <- as.numeric(2*x + e > 0)
+#' z <- rbinom(N, 1, .75)
+#' y_obs <- z*y
+#' df <- data.frame(y_obs, x, z)
+#' m1 <- pidoutcomes(y_obs ~ x, z, df)
+#' m1
+#'
+#'
 pidoutcomes <- function(outformula, # Formula for the conditional outcome
                         z, # name of variable indicating missing/non-missing outcomes
                         data, # The data frame
@@ -25,14 +74,9 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   z_col <- eval(z, envir = data)
   z_name <- deparse(substitute(z))
 
-  # # now fix namespace so it reads formulas
-  # tmpfun <- get("explodeFormula", envir = asNamespace("np"))
-  # environment(explodeFormula) <- environment(tmpfun)
-  # assignInNamespace("explodeFormula", explodeFormula, ns = "np")
-
   # estimate conditional density of outcome for known cases
   sm.data <- data[z_col == 1, ]
-  np_lower_bw <- np::npregbw(as.formula(string_form), data = sm.data)
+  np_lower_bw <- np::npregbw(as.formula(string_form), data = sm.data, ...)
   np_lower <- np::npreg(np_lower_bw,
                           newdata = data)
 

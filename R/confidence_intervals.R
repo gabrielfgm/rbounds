@@ -11,7 +11,7 @@ conf_int_bounds <- function(par_u, par_l, sigma_u, sigma_l, N, alpha = .95) {
   c_consts <- get_c_consts(N, delta, max_sig, alpha)
   lower <- par_l - (c_consts * sigma_l/sqrt(N))
   upper <- par_u + (c_consts * sigma_u/sqrt(N))
-  res <- list(lower, upper)
+  res <- list(max(lower, 0), min(upper, 1))
   names(res) <- paste(c("Lower", "Upper"), paste0(100*alpha, "% CI"), sep = " ")
   res
 }
@@ -37,6 +37,24 @@ pad <- function(s, n) {
   }
 }
 
+#' A simple print method for rbounds objects
+#'
+#' @param m A model fit by \code{pidoutcomes}
+#'
+#' @return By default we print the mean upper and lower bounds and CI's
+#' @export
+#'
+#' @examples
+#' #' N <- 1000
+#' x <- rnorm(N)
+#' e <- rnorm(N)
+#' y <- as.numeric(2*x + e > 0)
+#' z <- rbinom(N, 1, .75)
+#' y_obs <- z*y
+#' df <- data.frame(y_obs, x, z)
+#' m1 <- pidoutcomes(y_obs ~ x, z, df)
+#' m1
+#'
 print.rbounds <- function(m) {
   ave_stats <- lapply(m, function(x){round(mean(x), 5)})
   labs <- c("Av. Lower CI", "Av. Lower Bound", "Av. Upper Bound", "Av. Upper CI")
@@ -44,5 +62,44 @@ print.rbounds <- function(m) {
   to_print <- mapply(function(stat,space){pad(stat,space)}, ave_stats, spaces)
   cat("Av. Lower CI\tAv. Lower Bound\tAv. Upper Bound\tAv. Upper CI\n")
   cat(paste(to_print, collapse = "\t"))
+}
+
+#' A default plotting method for objects of class 'rbounds'
+#'
+#' @param m An object of class 'rbounds' estimated by \code{pidoutcomes}
+#'
+#' @return A ggplot2 plot. Can be modified with any standard ggplot2 options
+#' @export
+#'
+#' @examples
+#' N <- 1000
+#' x <- rnorm(N)
+#' e <- rnorm(N)
+#' y <- as.numeric(2*x + e > 0)
+#' z <- rbinom(N, 1, .75)
+#' y_obs <- z*y
+#' df <- data.frame(y_obs, x, z)
+#' m1 <- pidoutcomes(y_obs ~ x, z, df)
+#' plot(m1)
+#'
+plot.rbounds <- function(m) {
+  pdf <- data.frame(lower_ci = m$lower_ci, lower = m$lower,
+                    upper = m$upper, upper_ci = m$upper_ci)
+  pdf <- pdf[with(pdf, order(lower)), ]
+  pdf$observation <- 1:nrow(pdf)
+
+  ggplot2::ggplot(pdf,
+                  ggplot2::aes(observation,
+                               ymin = lower,
+                               ymax = upper)) +
+    ggplot2::geom_point(data = pdf, ggplot2::aes(x = observation,
+                                          y = lower_ci),
+                        color = "tomato", size = .5) +
+    ggplot2::geom_point(data = pdf, ggplot2::aes(x = observation,
+                                          y = upper_ci),
+                        color = "tomato", size = .5) +
+    ggplot2::geom_errorbar(color = "steelblue", alpha = .7) +
+    ggplot2::theme_minimal() +
+    ggplot2::ggtitle("Partially Identified Conditional Expectation Estimates")
 }
 
