@@ -24,4 +24,3 @@ get_c_consts <- function(N, delta, max_sig, alpha) {
   res$minimum
 }
 
-conf_int_bounds(.75, .65, .1, .27, 1000, alpha = .99)
