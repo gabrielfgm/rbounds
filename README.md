@@ -11,8 +11,8 @@ outcome with non-random missing outcomes. At the moment the package
 contains one function which estimates bounds on a conditional mean using
 non-parametric kernel regression estimators from the `np` package. In
 the future I hope to extend the package to cover treatment effect
-estimation and some additional assumptions such as monotone regresion
-and monotone treatment response.
+estimation, and to work with some additional assumptions such as
+monotone regresion and monotone treatment response.
 
 Example of bounding the conditional mean
 ----------------------------------------
