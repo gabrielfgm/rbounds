@@ -71,9 +71,9 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
 
   # estimate conditional density of outcome for known cases
   sm.data <- data[z_col == 1, ]
-  np_lower_bw <- np::npregbw(as.formula(string_form), data = sm.data, ...)
-  np_lower <- np::npreg(np_lower_bw,
-                          newdata = data)
+  mes <- capture.output(np_lower_bw <- np::npregbw(as.formula(string_form), data = sm.data, ...))
+  mes <- capture.output(np_lower <- np::npreg(np_lower_bw,
+                          newdata = data))
 
   # Estimate the conditional probability of observation
   z_form <- capture.output(print(dep_var_switcher(outformula, z_name)))[[1]]
