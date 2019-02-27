@@ -77,8 +77,8 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
 
   # Estimate the conditional probability of observation
   z_form <- capture.output(print(dep_var_switcher(outformula, z_name)))[[1]]
-  np_missing_bw <- np::npregbw(as.formula(z_form), data)
-  np_missing <- np::npreg(np_missing_bw)
+  mes <- capture.output(np_missing_bw <- np::npregbw(as.formula(z_form), data))
+  mes <- capture.output(np_missing <- np::npreg(np_missing_bw))
 
   # Compute worst case bounds
   m_l <- np_lower$mean * np_missing$mean

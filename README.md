@@ -25,8 +25,10 @@ observed. We have some covariates *x* whose value we observe for all
 observations.
 
 By the law of total probability it follows that
+
 *E*(*y*\|*x*) = *E*(*y*\|*x*, *z* = 1)*P*(*z* = 1\|*x*) + *E*(*y*\|*x*, *z* = 0)*P*(*z* = 0\|*x*).
- Each of the pieces of this equation can be estimated from the available
+
+Each of the pieces of this equation can be estimated from the available
 data with the exception of *E*(*y*\|*x*, *z* = 0), which is the
 conditional expectation of the outcome for the cases in which the
 outcome value is unobserved.
@@ -34,13 +36,16 @@ outcome value is unobserved.
 However, since 0 ≤ *y* ≤ 1, the unobserved function can take on the
 value of at most 1 – if all the unobserved outcomes were 1, or at least
 0. Thus the true conditional mean must fall within the bounds:
+
 *E*(*y*\|*x*, *z* = 1)*P*(*z* = 1\|*x*) ≤ *E*(*y*\|*x*) ≤ *E*(*y*\|*x*, *z* = 1)*P*(*z* = 1\|*x*) + (1 − *P*(*z* = 1\|*x*)).
 
 More generically, if we denote the minimum value the conditional outcome
 can take on as *γ*<sub>0</sub> and the maximum by *γ*<sub>1</sub>, then
 the conditional mean can be bounded by
+
 *E*(*y*\|*x*, *z* = 1)*P*(*z* = 1\|*x*) + *γ*<sub>0</sub>*P*(*z* = 0\|*x*) ≤ *E*(*y*\|*x*) ≤ *E*(*y*\|*x*, *z* = 1)*P*(*z* = 1\|*x*) + *γ*<sub>1</sub>*P*(*z* = 0\|*x*).
- The conditional expectations in these expressions can be estimated
+
+The conditional expectations in these expressions can be estimated
 parametrically or non-parametrically, and confidence intervals can be
 derived for the locations of the endpoints.
 
