@@ -62,17 +62,22 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
                         data, # The data frame
                         alpha = .95,
                         ...) {
+  # get call
+  call <- match.call()
+
   # work around language odity
   string_form <- capture.output(print(outformula))
 
   # Get the indicator variable
-  z_col <- eval(quote(z), envir = data)
   z_name <- deparse(substitute(z))
+  # Check for z in df
+  if (!(z_name %in% names(data))) {stop("The variable z must appear in data.")}
+  z_col <- data[z_name]
 
   # Check that z and y are actually binary
   y <- model.frame(outformula, data = data)[1]
-  if (!(min(y)==0 & max(y)==1)) {stop("The dependent variable must be binary.")}
-  if (!(min(z_col)==0 & max(z_col)==1)) {stop("The missing outcomes indicator z variable must be binary.")}
+  if (!(min(y)==0 & max(y)==1)) {stop("The dependent variable must be binary.", call. = FALSE)}
+  if (!(min(z_col)==0 & max(z_col)==1)) {stop("The missing outcomes indicator z variable must be binary.", call. = FALSE)}
 
   # estimate conditional density of outcome for known cases
   sm.data <- data[z_col == 1, ]
@@ -100,7 +105,8 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   res <- list(lower_ci = unlist(conf_ints[,1]),
        lower = m_l,
        upper = m_u,
-       upper_ci = unlist(conf_ints[,2]))
+       upper_ci = unlist(conf_ints[,2]),
+       call = call)
   class(res) <- "rbounds"
   res
 }
