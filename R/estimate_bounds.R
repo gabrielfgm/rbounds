@@ -92,7 +92,7 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   p <- np_missing$mean
   mu <- np_lower$mean
   not_p <- (1 - p)
-  sigma <- np_lower$merr
+  sigma <- np::se(np_lower)
 
   # Compute worst case bounds
   m_l <- mu * p
