@@ -69,6 +69,11 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   z_col <- eval(quote(z), envir = data)
   z_name <- deparse(substitute(z))
 
+  # Check that z and y are actually binary
+  y <- model.frame(outformula, data = data)[1]
+  if (!(min(y)==0 & max(y)==1)) {stop("The dependent variable must be binary.")}
+  if (!(min(z_col)==0 & max(z_col)==1)) {stop("The missing outcomes indicator z variable must be binary.")}
+
   # estimate conditional density of outcome for known cases
   sm.data <- data[z_col == 1, ]
   mes <- capture.output(np_lower_bw <- np::npregbw(as.formula(string_form), data = sm.data, ...))

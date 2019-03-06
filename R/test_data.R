@@ -1,7 +1,7 @@
 ################
 # Testing Data #
 ################
-# N <- 1000
+# N <- 100
 # x <- rnorm(N)
 # e <- rnorm(N)
 # y <- as.numeric(2*x + e > 0)
@@ -11,3 +11,9 @@
 #
 # m1 <- pidoutcomes(y_obs ~ x, z, df)
 # plot(m1)
+#
+# # now try to force errors
+# z_bad <- rnorm(N)
+# y_bad <- rnorm(N)
+#
+# pidoutcomes(y_bad ~ x, z, df)

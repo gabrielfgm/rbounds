@@ -12,13 +12,13 @@ contains one function which estimates bounds on a conditional mean using
 non-parametric kernel regression estimators from the `np` package. In
 the future I hope to extend the package to cover treatment effect
 estimation, and to work with some additional assumptions such as
-monotone regresion and monotone treatment response.
+monotone regression and monotone treatment response.
 
 Example of bounding the conditional mean
 ----------------------------------------
 
 Imagine that we are interested in estimating *E*(*y*\|*x*) where
-*y* ∈ (0, 1). Unfortunately, we are missing some observations of *y*.
+*y* ∈ {0, 1}. Unfortunately, we are missing some observations of *y*.
 Whether an observation is missing is denoted by a dummy variable *z*,
 where when *z* = 1 *y* is observed and otherwise the value of *y* is not
 observed. We have some covariates *x* whose value we observe for all
@@ -59,6 +59,11 @@ conditional means.
 ``` r
 ## We generate some fake data
 library(rbounds)
+#> Loading required package: np
+#> Nonparametric Kernel Methods for Mixed Datatypes (version 0.60-9)
+#> [vignette("np_faq",package="np") provides answers to frequently asked questions]
+#> [vignette("np",package="np") an overview]
+#> [vignette("entropy_np",package="np") an overview of entropy-based methods]
 set.seed(42)
 N <- 100
 x <- rnorm(N)
