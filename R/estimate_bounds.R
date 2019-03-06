@@ -42,7 +42,7 @@ dep_var_switcher <- function(form, swap) {
 #' intervals on the location
 #' of the parameter (as described in Manski and Imbens (2004)), and the
 #' estimated lower and upper bounds of the partially identified conditional
-#' mean
+#' mean.
 #' @export
 #'
 #' @examples
@@ -62,8 +62,6 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
                         data, # The data frame
                         alpha = .95,
                         ...) {
-  # get call
-  call <- match.call()
 
   # work around language odity
   string_form <- capture.output(print(outformula))
@@ -105,8 +103,7 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   res <- list(lower_ci = unlist(conf_ints[,1]),
        lower = m_l,
        upper = m_u,
-       upper_ci = unlist(conf_ints[,2]),
-       call = call)
+       upper_ci = unlist(conf_ints[,2]))
   class(res) <- "rbounds"
   res
 }
