@@ -77,7 +77,7 @@ which we use to estimate partially identified conditional conditional means.
 ## We generate some fake data
 library(rbounds)
 set.seed(42)
-N <- 1000
+N <- 100
 x <- rnorm(N)
 z <- rbinom(N, 1, pnorm(x))
 y <- rbinom(N, 1, pnorm(x))

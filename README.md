@@ -59,13 +59,8 @@ conditional means.
 ``` r
 ## We generate some fake data
 library(rbounds)
-#> Loading required package: np
-#> Nonparametric Kernel Methods for Mixed Datatypes (version 0.60-9)
-#> [vignette("np_faq",package="np") provides answers to frequently asked questions]
-#> [vignette("np",package="np") an overview]
-#> [vignette("entropy_np",package="np") an overview of entropy-based methods]
 set.seed(42)
-N <- 1000
+N <- 100
 x <- rnorm(N)
 z <- rbinom(N, 1, pnorm(x))
 y <- rbinom(N, 1, pnorm(x))
@@ -75,7 +70,7 @@ df <- data.frame(y, x, z)
 res <- pidoutcomes(y~x, z, df)
 res
 #> Av. Lower CI Av. Lower Bound Av. Upper Bound Av. Upper CI
-#>   0.28917        0.30856         0.81692       0.83827
+#>   0.24089        0.30612         0.82252       0.88991
 
 # We can plot it with a generic plotting method
 plot(res)
