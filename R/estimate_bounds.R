@@ -105,7 +105,7 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
 
   conf_ints <- do.call(rbind, apply(temp.df, 1, function(row){
     conf_int_bounds(row[2], row[1], sigma_u = row[4], sigma_l = row[3],
-                    nrow(data), alpha = alpha)
+                    1, alpha = alpha)
   }))
 
   # Return bounds

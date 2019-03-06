@@ -76,7 +76,7 @@ which we use to estimate partially identified conditional conditional means.
 ```{r example, cache=FALSE}
 ## We generate some fake data
 library(rbounds)
-set.seed(123)
+set.seed(42)
 
 N <- 100
 x <- rnorm(N)

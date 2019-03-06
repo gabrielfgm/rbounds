@@ -59,7 +59,7 @@ conditional means.
 ``` r
 ## We generate some fake data
 library(rbounds)
-set.seed(123)
+set.seed(42)
 
 N <- 100
 x <- rnorm(N)
@@ -71,7 +71,7 @@ df <- data.frame(y, x, z)
 res <- pidoutcomes(y~x, z, df)
 res
 #> Av. Lower CI Av. Lower Bound Av. Upper Bound Av. Upper CI
-#>   0.37027        0.37882         0.74315       0.74997
+#>   0.19763        0.30612         0.82252        0.8856
 
 # We can plot it with a generic plotting method
 plot(res)
