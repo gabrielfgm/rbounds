@@ -70,7 +70,7 @@ df <- data.frame(y, x, z)
 res <- pidoutcomes(y~x, z, df)
 res
 #> Av. Lower CI Av. Lower Bound Av. Upper Bound Av. Upper CI
-#>   0.24089        0.30612         0.82252       0.88991
+#>   0.29526        0.30612         0.82252       0.82888
 
 # We can plot it with a generic plotting method
 plot(res)

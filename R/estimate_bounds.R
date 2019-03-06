@@ -88,15 +88,24 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   mes <- capture.output(np_missing_bw <- np::npregbw(as.formula(z_form), data))
   mes <- capture.output(np_missing <- np::npreg(np_missing_bw))
 
+  # extract values to clarify algebra
+  p <- np_missing$mean
+  mu <- np_lower$mean
+  not_p <- (1 - p)
+  sigma <- np_lower$merr
+
   # Compute worst case bounds
-  m_l <- np_lower$mean * np_missing$mean
-  m_u <- m_l + (1-np_missing$mean)
-  temp.df <- data.frame(m_l, m_u)
+  m_l <- mu * p
+  m_u <- m_l + not_p
 
   # get confidence intervals
-  sigma <- sqrt(sum(residuals(np_lower)^2)/(sum(z_col) - 1))
+  sigma_l <- sigma^2 * p + mu^2 * p * not_p
+  sigma_u <- sigma^2 * p + mu^2 * p * not_p + p * not_p - 2 * mu * p * not_p
+  temp.df <- data.frame(m_l, m_u, sigma_l, sigma_u)
+
   conf_ints <- do.call(rbind, apply(temp.df, 1, function(row){
-    conf_int_bounds(row[2], row[1], sigma, sigma, nrow(data), alpha = alpha)
+    conf_int_bounds(row[2], row[1], sigma_u = row[4], sigma_l = row[3],
+                    nrow(data), alpha = alpha)
   }))
 
   # Return bounds
