@@ -60,6 +60,7 @@ conditional means.
 ## We generate some fake data
 library(rbounds)
 set.seed(42)
+
 N <- 100
 x <- rnorm(N)
 z <- rbinom(N, 1, pnorm(x))

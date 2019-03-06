@@ -73,10 +73,11 @@ derived for the locations of the endpoints.
 Using simulated data we present a simple example of the `pidoutcomes()` function
 which we use to estimate partially identified conditional conditional means.
 
-```{r example}
+```{r example, cache=FALSE}
 ## We generate some fake data
 library(rbounds)
 set.seed(42)
+
 N <- 100
 x <- rnorm(N)
 z <- rbinom(N, 1, pnorm(x))
