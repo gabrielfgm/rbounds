@@ -71,20 +71,31 @@ plot.rbounds <- function(x, ...) {
   pdf <- pdf[with(pdf, order(lower)), ]
   pdf$observation <- 1:nrow(pdf)
 
-  ggplot2::ggplot(pdf,
-                  ggplot2::aes(observation,
-                               ymin = lower,
-                               ymax = upper)) +
-    ggplot2::geom_point(data = pdf, ggplot2::aes(x = observation,
-                                                 y = lower_ci),
-                        color = "tomato", size = .5) +
-    ggplot2::geom_point(data = pdf, ggplot2::aes(x = observation,
-                                                 y = upper_ci),
-                        color = "tomato", size = .5) +
-    ggplot2::geom_errorbar(color = "steelblue", alpha = .7) +
+  # Create data for legend
+  ci_data <- data.frame(
+    observation = c(pdf$observation, pdf$observation),
+    y = c(pdf$lower_ci, pdf$upper_ci),
+    type = "95% CI"
+  )
+
+  ggplot2::ggplot(pdf, ggplot2::aes(x = observation)) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = lower, ymax = upper, color = "Bounds"),
+                           alpha = 0.7) +
+    ggplot2::geom_point(data = ci_data, ggplot2::aes(y = y, color = "95% CI"),
+                        size = 0.5) +
+    ggplot2::scale_color_manual(
+      name = "",
+      values = c("Bounds" = "steelblue", "95% CI" = "tomato"),
+      guide = ggplot2::guide_legend(override.aes = list(
+        linetype = c(1, 0),
+        shape = c(NA, 16),
+        size = c(0.5, 2)
+      ))
+    ) +
     ggplot2::theme_minimal() +
+    ggplot2::theme(legend.position = "bottom") +
     ggplot2::ggtitle("Partially Identified Conditional Expectation Estimates") +
-    ggplot2::xlab("Observation #") +
+    ggplot2::xlab("Observation (sorted by lower bound)") +
     ggplot2::ylab("Interval Estimate of E(y|x)")
 }
 
@@ -137,12 +148,28 @@ plot.rbounds_ate <- function(x, type = c("cate", "potential"), ...) {
     pdf <- pdf[order(pdf$lower), ]
     pdf$observation <- seq_len(nrow(pdf))
 
-    p <- ggplot2::ggplot(pdf, ggplot2::aes(x = observation, ymin = lower, ymax = upper)) +
-      ggplot2::geom_ribbon(fill = "steelblue", alpha = 0.4) +
-      ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "gray40") +
-      ggplot2::geom_hline(yintercept = x$ate_lower, linetype = "dotted", color = "tomato") +
-      ggplot2::geom_hline(yintercept = x$ate_upper, linetype = "dotted", color = "tomato") +
+    # Create data for horizontal lines with legend
+    hline_data <- data.frame(
+      yintercept = c(0, x$ate_lower, x$ate_upper),
+      line_type = c("Zero effect", "Average ATE bounds", "Average ATE bounds")
+    )
+
+    p <- ggplot2::ggplot(pdf, ggplot2::aes(x = observation)) +
+      ggplot2::geom_ribbon(ggplot2::aes(ymin = lower, ymax = upper, fill = "CATE bounds"),
+                           alpha = 0.4) +
+      ggplot2::geom_hline(ggplot2::aes(yintercept = 0, linetype = "Zero effect"),
+                          color = "gray40") +
+      ggplot2::geom_hline(ggplot2::aes(yintercept = x$ate_lower, linetype = "Average ATE bounds"),
+                          color = "tomato") +
+      ggplot2::geom_hline(ggplot2::aes(yintercept = x$ate_upper, linetype = "Average ATE bounds"),
+                          color = "tomato", show.legend = FALSE) +
+      ggplot2::scale_fill_manual(name = "", values = c("CATE bounds" = "steelblue")) +
+      ggplot2::scale_linetype_manual(
+        name = "",
+        values = c("Zero effect" = "dashed", "Average ATE bounds" = "dotted")
+      ) +
       ggplot2::theme_minimal() +
+      ggplot2::theme(legend.position = "bottom") +
       ggplot2::ggtitle("Bounds on Conditional Average Treatment Effect") +
       ggplot2::xlab("Observation (sorted by lower bound)") +
       ggplot2::ylab("CATE Bounds")
@@ -157,19 +184,26 @@ plot.rbounds_ate <- function(x, type = c("cate", "potential"), ...) {
     pdf <- pdf[order(pdf$ey1_l), ]
     pdf$observation <- seq_len(nrow(pdf))
 
-    p <- ggplot2::ggplot(pdf, ggplot2::aes(x = observation)) +
-      ggplot2::geom_ribbon(ggplot2::aes(ymin = ey1_l, ymax = ey1_u),
-                           fill = "steelblue", alpha = 0.4) +
-      ggplot2::geom_ribbon(ggplot2::aes(ymin = ey0_l, ymax = ey0_u),
-                           fill = "tomato", alpha = 0.4) +
+    # Reshape for legend
+    pdf_long <- data.frame(
+      observation = rep(pdf$observation, 2),
+      ymin = c(pdf$ey1_l, pdf$ey0_l),
+      ymax = c(pdf$ey1_u, pdf$ey0_u),
+      outcome = rep(c("E[Y(1)|X]", "E[Y(0)|X]"), each = nrow(pdf))
+    )
+
+    p <- ggplot2::ggplot(pdf_long, ggplot2::aes(x = observation)) +
+      ggplot2::geom_ribbon(ggplot2::aes(ymin = ymin, ymax = ymax, fill = outcome),
+                           alpha = 0.4) +
+      ggplot2::scale_fill_manual(
+        name = "Potential Outcome",
+        values = c("E[Y(1)|X]" = "steelblue", "E[Y(0)|X]" = "tomato")
+      ) +
       ggplot2::theme_minimal() +
+      ggplot2::theme(legend.position = "bottom") +
       ggplot2::ggtitle("Bounds on Potential Outcome Means") +
       ggplot2::xlab("Observation (sorted)") +
-      ggplot2::ylab("E[Y(d)|X]") +
-      ggplot2::annotate("text", x = nrow(pdf) * 0.9, y = mean(x$ey1_upper),
-                        label = "E[Y(1)|X]", color = "steelblue") +
-      ggplot2::annotate("text", x = nrow(pdf) * 0.9, y = mean(x$ey0_lower),
-                        label = "E[Y(0)|X]", color = "tomato")
+      ggplot2::ylab("E[Y(d)|X]")
   }
   p
 }

@@ -1,3 +1,4 @@
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # rbounds: Estimating Bounds on Partially Identified Parameters
@@ -18,33 +19,33 @@ components of the bounds.
 
 ## Example of bounding the conditional mean
 
-Imagine that we are interested in estimating *E*(*y*\|*x*) where
-*y* ∈ {0, 1}. Unfortunately, we are missing some observations of *y*.
-Whether an observation is missing is denoted by a dummy variable *z*,
-where when *z* = 1 *y* is observed and otherwise the value of *y* is not
-observed. We have some covariates *x* whose value we observe for all
+Imagine that we are interested in estimating $E(y | x)$ where
+$y \in \{0,1\}$. Unfortunately, we are missing some observations of $y$.
+Whether an observation is missing is denoted by a dummy variable $z$,
+where when $z=1$ $y$ is observed and otherwise the value of $y$ is not
+observed. We have some covariates $x$ whose value we observe for all
 observations.
 
 By the law of total probability it follows that
 
-*E*(*y*\|*x*) = *E*(*y*\|*x*,*z*=1)*P*(*z*=1\|*x*) + *E*(*y*\|*x*,*z*=0)*P*(*z*=0\|*x*).
+$$E(y | x) = E(y | x, z = 1)P(z = 1 | x) + E(y | x, z = 0)P(z = 0 | x).$$
 
 Each of the pieces of this equation can be estimated from the available
-data with the exception of *E*(*y*\|*x*,*z*=0), which is the conditional
+data with the exception of $E(y|x, z=0)$, which is the conditional
 expectation of the outcome for the cases in which the outcome value is
 unobserved.
 
-However, since 0 ≤ *y* ≤ 1, the unobserved function can take on the
-value of at most 1 – if all the unobserved outcomes were 1, or at least
-0. Thus the true conditional mean must fall within the bounds:
+However, since $0 \leq y \leq 1$, the unobserved function can take on
+the value of at most $1$ – if all the unobserved outcomes were 1, or at
+least $0$. Thus the true conditional mean must fall within the bounds:
 
-*E*(*y*\|*x*,*z*=1)*P*(*z*=1\|*x*) ≤ *E*(*y*\|*x*) ≤ *E*(*y*\|*x*,*z*=1)*P*(*z*=1\|*x*) + (1−*P*(*z*=1\|*x*)).
+$$E(y | x, z = 1)P(z = 1 | x) \leq E(y | x) \leq E(y | x, z = 1)P(z = 1 | x ) + (1 - P(z = 1 | x)).$$
 
 More generically, if we denote the minimum value the conditional outcome
-can take on as *γ*<sub>0</sub> and the maximum by *γ*<sub>1</sub>, then
-the conditional mean can be bounded by
+can take on as $\gamma_0$ and the maximum by $\gamma_1$, then the
+conditional mean can be bounded by
 
-*E*(*y*\|*x*,*z*=1)*P*(*z*=1\|*x*) + *γ*<sub>0</sub>*P*(*z*=0\|*x*) ≤ *E*(*y*\|*x*) ≤ *E*(*y*\|*x*,*z*=1)*P*(*z*=1\|*x*) + *γ*<sub>1</sub>*P*(*z*=0\|*x*).
+$$E(y | x, z = 1)P(z = 1 | x) + \gamma_0 P(z=0|x) \leq E(y | x) \leq E(y | x, z = 1)P(z = 1 | x ) + \gamma_1 P(z = 0 | x).$$
 
 The conditional expectations in these expressions can be estimated
 parametrically or non-parametrically, and confidence intervals can be
@@ -78,7 +79,7 @@ res
 plot(res)
 ```
 
-![](README-example-1.png)
+![](README-example-1.png)<!-- -->
 
 ## Bounding Average Treatment Effects
 
@@ -86,16 +87,15 @@ The `ate_bounds()` function computes Manski worst-case bounds on the
 Average Treatment Effect (ATE) when treatment assignment may be
 non-random.
 
-The ATE is *τ* = *E*\[*Y*(1)\] − *E*\[*Y*(0)\] where *Y*(1) and *Y*(0)
-are potential outcomes. Since we only observe *Y*(1) for treated units
-and *Y*(0) for control units, the ATE is not point-identified without
+The ATE is $\tau = E[Y(1)] - E[Y(0)]$ where $Y(1)$ and $Y(0)$ are
+potential outcomes. Since we only observe $Y(1)$ for treated units and
+$Y(0)$ for control units, the ATE is not point-identified without
 assumptions.
 
-If outcomes are bounded (e.g., *Y* ∈ \[0,1\]), we can derive worst-case
+If outcomes are bounded (e.g., $Y \in [0,1]$), we can derive worst-case
 bounds:
 
-*τ*<sup>*L*</sup> = *E*<sup>*L*</sup>\[*Y*(1)\] − *E*<sup>*U*</sup>\[*Y*(0)\]
-*τ*<sup>*U*</sup> = *E*<sup>*U*</sup>\[*Y*(1)\] − *E*<sup>*L*</sup>\[*Y*(0)\]
+$$\tau^L = E^L[Y(1)] - E^U[Y(0)]$$ $$\tau^U = E^U[Y(1)] - E^L[Y(0)]$$
 
 ### ATE Example
 
@@ -139,4 +139,4 @@ ate_res
 plot(ate_res)
 ```
 
-![](README-ate_example-1.png)
+![](README-ate_example-1.png)<!-- -->
