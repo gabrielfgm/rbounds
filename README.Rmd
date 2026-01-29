@@ -94,13 +94,22 @@ The `ate_bounds()` function computes Manski worst-case bounds on the
 Average Treatment Effect (ATE) when treatment assignment may be non-random.
 
 The ATE is $\tau = E[Y(1)] - E[Y(0)]$ where $Y(1)$ and $Y(0)$ are
-potential outcomes. Since we only observe $Y(1)$ for treated units and
-$Y(0)$ for control units, the ATE is not point-identified without assumptions.
+potential outcomes. Since we only observe $Y(1)$ for treated units (where $D=1$) and
+$Y(0)$ for control units (where $D=0$), the ATE is not point-identified without assumptions.
 
-If outcomes are bounded (e.g., $Y \in [0,1]$), we can derive worst-case bounds:
+By the law of iterated expectations:
 
-$$\tau^L = E^L[Y(1)] - E^U[Y(0)]$$
-$$\tau^U = E^U[Y(1)] - E^L[Y(0)]$$
+$$E[Y(1)] = E[Y|D=1] \cdot P(D=1) + E[Y(1)|D=0] \cdot P(D=0)$$
+
+The term $E[Y(1)|D=0]$ — the mean treated outcome for those who were not treated — is unobservable. However, if outcomes are bounded ($Y \in [y_{min}, y_{max}]$), we can bound this term and thus bound $E[Y(1)]$:
+
+$$E[Y|D=1] \cdot P(D=1) + y_{min} \cdot P(D=0) \leq E[Y(1)] \leq E[Y|D=1] \cdot P(D=1) + y_{max} \cdot P(D=0)$$
+
+Similarly for $E[Y(0)]$. The ATE bounds are then:
+
+$$\tau^L = \left(E[Y|D=1] \cdot P(D=1) + y_{min} \cdot P(D=0)\right) - \left(y_{max} \cdot P(D=1) + E[Y|D=0] \cdot P(D=0)\right)$$
+
+$$\tau^U = \left(E[Y|D=1] \cdot P(D=1) + y_{max} \cdot P(D=0)\right) - \left(y_{min} \cdot P(D=1) + E[Y|D=0] \cdot P(D=0)\right)$$
 
 ### ATE Example
 
