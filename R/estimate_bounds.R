@@ -92,16 +92,29 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   p <- np_missing$mean
   mu <- np_lower$mean
   not_p <- (1 - p)
-  sigma <- np::se(np_lower)
+
+  # Get standard errors from np models
+  se_mu <- np::se(np_lower)      # SE of E[Y|X, Z=1]
+  se_p <- np::se(np_missing)     # SE of P(Z=1|X)
 
   # Compute worst case bounds
+  # Lower: E_L = mu * p
+  # Upper: E_U = mu * p + (1 - p)
   m_l <- mu * p
   m_u <- m_l + not_p
 
-  # get confidence intervals
-  sigma_l <- sigma^2 * p + mu^2 * p * not_p
-  sigma_u <- sigma^2 * p + mu^2 * p * not_p + p * not_p - 2 * mu * p * not_p
-  temp.df <- data.frame(m_l, m_u, sigma_l, sigma_u)
+  # Variance of bounds using delta method (treating mu and p as independent)
+  # Var(E_L) = Var(mu * p) approx= p^2 * Var(mu) + mu^2 * Var(p)
+  # Var(E_U) = Var(mu * p + 1 - p) = Var((mu - 1) * p + 1) approx= (mu-1)^2 * Var(p) + p^2 * Var(mu)
+  var_l <- p^2 * se_mu^2 + mu^2 * se_p^2
+  var_u <- p^2 * se_mu^2 + (mu - 1)^2 * se_p^2
+
+  # Convert to standard deviations for conf_int_bounds
+  # Use pmax to avoid numerical issues with very small variances
+  sd_l <- sqrt(pmax(var_l, 0))
+  sd_u <- sqrt(pmax(var_u, 0))
+
+  temp.df <- data.frame(m_l, m_u, sigma_l = sd_l, sigma_u = sd_u)
 
   N <- nrow(data)
   conf_ints <- do.call(rbind, apply(temp.df, 1, function(row){
