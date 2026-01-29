@@ -13,9 +13,10 @@ pad <- function(s, n) {
 
 #' A simple print method for rbounds objects
 #'
-#' @param m A model fit by \code{pidoutcomes}
+#' @param x A model fit by \code{pidoutcomes}
+#' @param ... Additional arguments (ignored)
 #'
-#' @return By default we print the mean upper and lower bounds and CI's
+#' @return Invisibly returns the input object
 #' @export
 #'
 #' @examples
@@ -29,19 +30,22 @@ pad <- function(s, n) {
 #' m1 <- pidoutcomes(y_obs ~ x, z, df)
 #' m1
 #'
-print.rbounds <- function(m) {
-  ave_stats <- lapply(m, function(x){round(mean(x), 5)})
+print.rbounds <- function(x, ...) {
+  ave_stats <- lapply(x, function(v){round(mean(v), 5)})
   labs <- c("Av. Lower CI", "Av. Lower Bound", "Av. Upper Bound", "Av. Upper CI")
   spaces <- nchar(labs)
   to_print <- mapply(function(stat,space){pad(stat,space)}, ave_stats, spaces)
   cat("Av. Lower CI\tAv. Lower Bound\tAv. Upper Bound\tAv. Upper CI\n")
   cat(paste(to_print, collapse = "\t"))
+  cat("\n")
+  invisible(x)
 }
 
 
 #' A default plotting method for objects of class 'rbounds'
 #'
-#' @param m An object of class 'rbounds' estimated by \code{pidoutcomes}
+#' @param x An object of class 'rbounds' estimated by \code{pidoutcomes}
+#' @param ... Additional arguments (ignored)
 #'
 #' @return A ggplot2 plot. Can be modified with any standard ggplot2 options
 #' @export
@@ -57,9 +61,9 @@ print.rbounds <- function(m) {
 #' m1 <- pidoutcomes(y_obs ~ x, z, df)
 #' plot(m1)
 #'
-plot.rbounds <- function(m) {
-  pdf <- data.frame(lower_ci = m$lower_ci, lower = m$lower,
-                    upper = m$upper, upper_ci = m$upper_ci)
+plot.rbounds <- function(x, ...) {
+  pdf <- data.frame(lower_ci = x$lower_ci, lower = x$lower,
+                    upper = x$upper, upper_ci = x$upper_ci)
   pdf <- pdf[with(pdf, order(lower)), ]
   pdf$observation <- 1:nrow(pdf)
 
