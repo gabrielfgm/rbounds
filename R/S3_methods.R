@@ -20,7 +20,8 @@ pad <- function(s, n) {
 #' @export
 #'
 #' @examples
-#' #' N <- 1000
+#' \dontrun{
+#' N <- 1000
 #' x <- rnorm(N)
 #' e <- rnorm(N)
 #' y <- as.numeric(2*x + e > 0)
@@ -29,6 +30,7 @@ pad <- function(s, n) {
 #' df <- data.frame(y_obs, x, z)
 #' m1 <- pidoutcomes(y_obs ~ x, z, df)
 #' m1
+#' }
 #'
 print.rbounds <- function(x, ...) {
   ave_stats <- lapply(x, function(v){round(mean(v), 5)})
@@ -51,6 +53,7 @@ print.rbounds <- function(x, ...) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' N <- 1000
 #' x <- rnorm(N)
 #' e <- rnorm(N)
@@ -60,6 +63,7 @@ print.rbounds <- function(x, ...) {
 #' df <- data.frame(y_obs, x, z)
 #' m1 <- pidoutcomes(y_obs ~ x, z, df)
 #' plot(m1)
+#' }
 #'
 plot.rbounds <- function(x, ...) {
   pdf <- data.frame(lower_ci = x$lower_ci, lower = x$lower,

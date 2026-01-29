@@ -24,7 +24,7 @@ length \code{nrow(data)}. These are the lower and upper confidence
 intervals on the location
 of the parameter (as described in Manski and Imbens (2004)), and the
 estimated lower and upper bounds of the partially identified conditional
-mean
+mean.
 }
 \description{
 \code{pidoutcomes} computes the upper and lower bounds on the
@@ -49,7 +49,8 @@ at the specified level, rather than intervals that are guaranteed to
 cover the bounds at the specified level.
 }
 \examples{
-#' N <- 1000
+\dontrun{
+N <- 1000
 x <- rnorm(N)
 e <- rnorm(N)
 y <- as.numeric(2*x + e > 0)
@@ -58,6 +59,7 @@ y_obs <- z*y
 df <- data.frame(y_obs, x, z)
 m1 <- pidoutcomes(y_obs ~ x, z, df)
 m1
+}
 
 
 }

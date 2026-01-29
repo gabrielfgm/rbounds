@@ -5,13 +5,19 @@
 # This code computes confidence intervals for the location of a parameter within
 # an identified set. It is based on Imbens and Manski (2004).
 
-conf_int_bounds <- function(par_u, par_l, sigma_u, sigma_l, N, alpha = .95) {
+conf_int_bounds <- function(par_u, par_l, sigma_u, sigma_l, N, alpha = .95,
+                            clip_lower = NULL, clip_upper = NULL) {
   delta = par_u - par_l
   max_sig <- max(sigma_l, sigma_u)
   c_consts <- get_c_consts(N, delta, max_sig, alpha)
   lower <- par_l - (c_consts * sigma_l/sqrt(N))
   upper <- par_u + (c_consts * sigma_u/sqrt(N))
-  res <- list(max(lower, 0), min(upper, 1))
+
+  # Apply optional clipping bounds
+  if (!is.null(clip_lower)) lower <- max(lower, clip_lower)
+  if (!is.null(clip_upper)) upper <- min(upper, clip_upper)
+
+  res <- list(lower, upper)
   names(res) <- paste(c("Lower", "Upper"), paste0(100*alpha, "% CI"), sep = " ")
   res
 }

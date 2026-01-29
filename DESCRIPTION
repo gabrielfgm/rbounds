@@ -17,9 +17,10 @@ Description: An implementation of estimators for partially identified
     missing data, or treatment effects with selection into 
     treatment.
 License: MIT
+Encoding: UTF-8
 LazyData: true
 Imports:
     ggplot2,
     np
 Suggests: testthat
-RoxygenNote: 6.1.1
+RoxygenNote: 7.2.3

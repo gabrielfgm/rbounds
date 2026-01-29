@@ -1,3 +1,11 @@
+#' @importFrom stats model.frame as.formula reformulate pnorm optimise
+#' @importFrom utils globalVariables
+NULL
+
+# Suppress R CMD check notes about ggplot2 non-standard evaluation
+utils::globalVariables(c("observation", "lower", "upper", "lower_ci", "upper_ci",
+                         "ey1_l", "ey1_u", "ey0_l", "ey0_u"))
+
 # This is a helper function to swap the dependent variable in a formula object
 dep_var_switcher <- function(form, swap) {
   reformulate(deparse(form[[3]]), response = swap)
@@ -46,7 +54,8 @@ dep_var_switcher <- function(form, swap) {
 #' @export
 #'
 #' @examples
-#' #' N <- 1000
+#' \dontrun{
+#' N <- 1000
 #' x <- rnorm(N)
 #' e <- rnorm(N)
 #' y <- as.numeric(2*x + e > 0)
@@ -55,6 +64,7 @@ dep_var_switcher <- function(form, swap) {
 #' df <- data.frame(y_obs, x, z)
 #' m1 <- pidoutcomes(y_obs ~ x, z, df)
 #' m1
+#' }
 #'
 #'
 pidoutcomes <- function(outformula, # Formula for the conditional outcome
@@ -80,11 +90,13 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
 
   # Estimate conditional mean of outcome for observed cases: E[Y|X, Z=1]
   sm.data <- data[z_col == 1, ]
-  np_lower_bw <- suppressMessages(np::npregbw(outformula, data = sm.data, ...))
+  # Create formula in current environment to avoid scoping issues with np
+  outcome_form <- as.formula(deparse(outformula), env = environment())
+  np_lower_bw <- suppressMessages(np::npregbw(outcome_form, data = sm.data, ...))
   np_lower <- suppressMessages(np::npreg(np_lower_bw, newdata = data))
 
   # Estimate the conditional probability of observation: P(Z=1|X)
-  z_form <- dep_var_switcher(outformula, z_name)
+  z_form <- as.formula(deparse(dep_var_switcher(outformula, z_name)), env = environment())
   np_missing_bw <- suppressMessages(np::npregbw(z_form, data = data))
   np_missing <- suppressMessages(np::npreg(np_missing_bw))
 
@@ -119,7 +131,7 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   N <- nrow(data)
   conf_ints <- do.call(rbind, apply(temp.df, 1, function(row){
     conf_int_bounds(row[2], row[1], sigma_u = row[4], sigma_l = row[3],
-                    N = N, alpha = alpha)
+                    N = N, alpha = alpha, clip_lower = 0, clip_upper = 1)
   }))
 
   # Return bounds
@@ -229,21 +241,23 @@ ate_bounds <- function(formula,
   data_treated <- data[d_col == 1, ]
   data_control <- data[d_col == 0, ]
 
+  # Create formula in current environment to avoid scoping issues with np
+  outcome_form <- as.formula(deparse(formula), env = environment())
+
   # Estimate E[Y|D=1, X] - conditional mean for treated
-  np_treated_bw <- suppressMessages(np::npregbw(formula, data = data_treated, ...))
+  np_treated_bw <- suppressMessages(np::npregbw(outcome_form, data = data_treated, ...))
   np_treated <- suppressMessages(np::npreg(np_treated_bw, newdata = data))
   ey_d1 <- np_treated$mean
   se_ey_d1 <- np::se(np_treated)
 
-
   # Estimate E[Y|D=0, X] - conditional mean for control
-  np_control_bw <- suppressMessages(np::npregbw(formula, data = data_control, ...))
+  np_control_bw <- suppressMessages(np::npregbw(outcome_form, data = data_control, ...))
   np_control <- suppressMessages(np::npreg(np_control_bw, newdata = data))
   ey_d0 <- np_control$mean
   se_ey_d0 <- np::se(np_control)
 
   # Estimate P(D=1|X) - propensity score
-  ps_form <- dep_var_switcher(formula, d_name)
+  ps_form <- as.formula(deparse(dep_var_switcher(formula, d_name)), env = environment())
   np_ps_bw <- suppressMessages(np::npregbw(ps_form, data = data))
   np_ps <- suppressMessages(np::npreg(np_ps_bw))
   p_d1 <- np_ps$mean
