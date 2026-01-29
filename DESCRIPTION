@@ -5,7 +5,7 @@ Version: 0.1.0
 Author: person("Gabriel", "Geisler Mesevage", email = "gabriel.mesevage@gmail.com",
   role = c("aut", "cre"))
 Maintainer: The package maintainer <gabriel.mesevage@gmail.com>
-Description: An implimentation of estimators for partially identified 
+Description: An implementation of estimators for partially identified 
     parameters as described in Manski The Partial Identification 
     of Probability Distributions. This package provides a syntax
     for identifying the bounds on parameters whose value cannot
