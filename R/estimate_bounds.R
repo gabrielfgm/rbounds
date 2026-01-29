@@ -63,30 +63,30 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
                         alpha = .95,
                         ...) {
 
-  # work around language odity
-  string_form <- capture.output(print(outformula))
-
   # Get the indicator variable
   z_name <- deparse(substitute(z))
   # Check for z in df
   if (!(z_name %in% names(data))) {stop("The variable z must appear in data.")}
-  z_col <- data[z_name]
+  z_col <- data[[z_name]]
 
   # Check that z and y are actually binary
-  y <- model.frame(outformula, data = data)[1]
-  if (!(min(y)==0 & max(y)==1)) {stop("The dependent variable must be binary.", call. = FALSE)}
-  if (!(min(z_col)==0 & max(z_col)==1)) {stop("The missing outcomes indicator z variable must be binary.", call. = FALSE)}
+  y <- model.frame(outformula, data = data)[[1]]
+  if (!(min(y) == 0 & max(y) == 1)) {
+    stop("The dependent variable must be binary.", call. = FALSE)
+  }
+  if (!(min(z_col) == 0 & max(z_col) == 1)) {
+    stop("The missing outcomes indicator z variable must be binary.", call. = FALSE)
+  }
 
-  # estimate conditional density of outcome for known cases
+  # Estimate conditional mean of outcome for observed cases: E[Y|X, Z=1]
   sm.data <- data[z_col == 1, ]
-  mes <- capture.output(np_lower_bw <- np::npregbw(as.formula(string_form), data = sm.data, ...))
-  mes <- capture.output(np_lower <- np::npreg(np_lower_bw,
-                          newdata = data))
+  np_lower_bw <- suppressMessages(np::npregbw(outformula, data = sm.data, ...))
+  np_lower <- suppressMessages(np::npreg(np_lower_bw, newdata = data))
 
-  # Estimate the conditional probability of observation
-  z_form <- capture.output(print(dep_var_switcher(outformula, z_name)))[[1]]
-  mes <- capture.output(np_missing_bw <- np::npregbw(as.formula(z_form), data))
-  mes <- capture.output(np_missing <- np::npreg(np_missing_bw))
+  # Estimate the conditional probability of observation: P(Z=1|X)
+  z_form <- dep_var_switcher(outformula, z_name)
+  np_missing_bw <- suppressMessages(np::npregbw(z_form, data = data))
+  np_missing <- suppressMessages(np::npreg(np_missing_bw))
 
   # extract values to clarify algebra
   p <- np_missing$mean
