@@ -103,9 +103,10 @@ pidoutcomes <- function(outformula, # Formula for the conditional outcome
   sigma_u <- sigma^2 * p + mu^2 * p * not_p + p * not_p - 2 * mu * p * not_p
   temp.df <- data.frame(m_l, m_u, sigma_l, sigma_u)
 
+  N <- nrow(data)
   conf_ints <- do.call(rbind, apply(temp.df, 1, function(row){
     conf_int_bounds(row[2], row[1], sigma_u = row[4], sigma_l = row[3],
-                    1, alpha = alpha)
+                    N = N, alpha = alpha)
   }))
 
   # Return bounds
