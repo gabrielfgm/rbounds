@@ -14,20 +14,21 @@ knitr::opts_chunk$set(
 )
 ```
 
-# rbounds: Estimating Bounds on Conditional Expectation Functions
+# rbounds: Estimating Bounds on Partially Identified Parameters
 
 The goal of rbounds is to estimate bounds on the location of parameters
 in models in which the value of the parameter can only be partially
-identified. 
+identified.
 
-The package was developed to estimate the conditional mean of a 
-binary outcome with non-random missing outcomes.
-At the moment the package contains one function which estimates
-bounds on a conditional mean using non-parametric kernel regression
-estimators from the `np` package. In the future I hope to extend the
-package to cover treatment effect estimation, and to work with some
-additional assumptions such as monotone regression and monotone
-treatment response.
+The package implements non-parametric bounds estimation following the
+work of Charles Manski on partial identification. It uses kernel
+regression estimators from the `np` package to estimate the
+identifiable components of the bounds.
+
+**Current functionality:**
+
+1. `pidoutcomes()`: Bounds on conditional means with missing outcomes
+2. `ate_bounds()`: Manski bounds on Average Treatment Effects (ATE)
 
 ## Example of bounding the conditional mean
 
@@ -91,4 +92,49 @@ res
 # We can plot it with a generic plotting method
 plot(res)
 
+```
+
+## Bounding Average Treatment Effects
+
+The `ate_bounds()` function computes Manski worst-case bounds on the
+Average Treatment Effect (ATE) when treatment assignment may be non-random.
+
+The ATE is $\tau = E[Y(1)] - E[Y(0)]$ where $Y(1)$ and $Y(0)$ are
+potential outcomes. Since we only observe $Y(1)$ for treated units and
+$Y(0)$ for control units, the ATE is not point-identified without assumptions.
+
+If outcomes are bounded (e.g., $Y \in [0,1]$), we can derive worst-case bounds:
+
+$$\tau^L = E^L[Y(1)] - E^U[Y(0)]$$
+$$\tau^U = E^U[Y(1)] - E^L[Y(0)]$$
+
+### ATE Example
+
+```{r ate_example, cache=FALSE}
+# Simulate data with selection into treatment
+set.seed(123)
+N <- 200
+x <- rnorm(N)
+
+# Treatment depends on x (selection)
+d <- rbinom(N, 1, pnorm(0.5 * x))
+
+# Potential outcomes
+y0 <- rbinom(N, 1, pnorm(-0.3 + 0.3 * x))
+y1 <- rbinom(N, 1, pnorm(0.3 + 0.3 * x))
+
+# Observed outcome
+y <- d * y1 + (1 - d) * y0
+df <- data.frame(y = y, x = x, d = d)
+
+# True ATE (in this simulation we can compute it)
+true_ate <- mean(y1 - y0)
+cat("True ATE:", round(true_ate, 3), "\n")
+
+# Estimate ATE bounds
+ate_res <- ate_bounds(y ~ x, treatment = d, data = df)
+ate_res
+
+# Plot CATE bounds
+plot(ate_res)
 ```
